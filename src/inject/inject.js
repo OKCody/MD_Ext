@@ -5,9 +5,13 @@ chrome.extension.sendMessage({}, function(response) {
 
 		// ----------------------------------------------------------
 		// This part of the script triggers when page is done loading
-		console.log("Hello. This message was sent from scripts/inject.js");
+		//console.log("Hello. This message was sent from scripts/inject.js");
 		//
 		showdownCall(mathjaxCall);
+		//Applys most recently saved style to page
+		chrome.runtime.sendMessage({ text: "updateCSS", from: "content.js" }, /*function(tab){chrome.storage.local.set({tabID: tab})}*/);
+
+
 		// ----------------------------------------------------------
 	}
 	}, 10);

@@ -11,15 +11,19 @@
   },
   "default_locale": "en",
   "options_page": "src/options/index.html",
-  "page_action": {
-    "default_icon": "icons/icon19.png",
-    "default_title": "page action demo",
-    "default_popup": "src/page_action/page_action.html"
+  "browser_action": {
+    "default_title": "MD_Ext",
+    "default_popup": "/src/broswer_action/popup.html"
   },
   "permissions": [
     "file:///*.md",
-    "tabs"
+    "<all_urls>",
+    "tabs",
+    "storage"
   ],
+  "background": {
+    "page": "/src/bg/background.html"
+  },
   "content_scripts": [
     {
       "matches": [
@@ -41,6 +45,8 @@
   ],
   "web_accessible_resources": [
     "/js/MathJax/*",
-    "/js/Showdown/*"
+    "/js/Showdown/*",
+    "/src/options/*",
+    "<all_urls>"
   ]
 }
