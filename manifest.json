@@ -13,7 +13,7 @@
   "options_page": "src/options/index.html",
   "browser_action": {
     "default_title": "MD_Ext",
-    "default_popup": "/src/broswer_action/popup.html"
+    "default_popup": "/src/browser_action/popup.html"
   },
   "permissions": [
     "file:///*.md",
