@@ -6,7 +6,8 @@ chrome.extension.sendMessage({}, function(response) {
 		// The following triggers when page is done loading
 		// ----------------------------------------------------------
 		showdownCall(mathjaxCall(applyStyle()));
-		updateStyle(); //update user_css on message from action.js
+		updateStyle(); // Update user_css on message from action.js
+		removeStyle(); // Remove contents of user_css on message from action.js
 
 		// ----------------------------------------------------------
 		}
@@ -52,7 +53,7 @@ function applyStyle(){
 	});
 }
 
-// Listens for update from action.js and applys user-selected style
+// Listens for message from action.js and applys user-selected style
 function updateStyle(){
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 		if (msg.text == "updateCSS"){
@@ -60,6 +61,21 @@ function updateStyle(){
 				chrome.storage.local.get('style', function(result){
 					document.getElementById('user_css').innerHTML = result.style;
 				});
+			}
+		}
+	});
+}
+
+// Listens for message from action.js and removes contents of user_css instead
+// of removing entire tag because subsequent styles applied rely on there being
+// an element with id="user_css"
+// Also sets 'style' in local storage to empty string 
+function removeStyle(){
+	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
+		if (msg.text == "removeStyle"){
+			if(msg.from == "action.js"){
+				chrome.storage.local.set({'style': ""});
+				document.getElementById('user_css').innerHTML = "";
 			}
 		}
 	});
