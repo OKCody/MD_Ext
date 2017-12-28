@@ -19,7 +19,8 @@
     "file:///*.md",
     "<all_urls>",
     "tabs",
-    "storage"
+    "storage",
+    "debugger"
   ],
   "background": {
     "page": "/src/bg/background.html"
@@ -30,7 +31,7 @@
         "file:///*.md"
       ],
       "css": [
-        "/src/inject/inject.css"
+        "/src/content/content.css"
       ]
     },
     {
@@ -39,7 +40,7 @@
       ],
       "js": [
         "/js/Showdown/dist/showdown.js",
-        "/src/inject/inject.js"
+        "/src/content/content.js"
       ]
     }
   ],
