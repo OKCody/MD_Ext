@@ -56,7 +56,7 @@ function applyStyle(){
 // Listens for message from action.js and applys user-selected style
 function updateStyle(){
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
-		if (msg.text == "updateCSS"){
+		if (msg.text == "updateStyle"){
 			if(msg.from == "action.js"){
 				chrome.storage.local.get('style', function(result){
 					document.getElementById('user_css').innerHTML = result.style;
@@ -69,7 +69,7 @@ function updateStyle(){
 // Listens for message from action.js and removes contents of user_css instead
 // of removing entire tag because subsequent styles applied rely on there being
 // an element with id="user_css"
-// Also sets 'style' in local storage to empty string 
+// Also sets 'style' in local storage to empty string
 function removeStyle(){
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 		if (msg.text == "removeStyle"){
