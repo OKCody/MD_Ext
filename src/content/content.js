@@ -17,6 +17,7 @@ chrome.extension.sendMessage({}, function(response) {
 // Runs Showdown on text in <pre> automatically added by browser
 function showdownCall(callback){
 	var markdown = document.getElementsByTagName("pre")[0].innerHTML;
+	chrome.storage.local.set({'markdown': markdown});
 	var converter = new showdown.Converter();
 	var html = converter.makeHtml(markdown);
 	document.body.innerHTML = html;
