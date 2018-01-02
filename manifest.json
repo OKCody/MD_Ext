@@ -36,7 +36,9 @@
     },
     {
       "matches": [
-        "file:///*.md"
+        "file:///*.md",
+        "http://*/.md",
+        "https://*/.md"
       ],
       "js": [
         "/js/Showdown/dist/showdown.js",
