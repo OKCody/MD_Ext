@@ -3,13 +3,13 @@
 <head>
   <style>
     html{
-      width: 300px;
-      padding: 2.5px;
+      width: 316px;
+      padding: 0px;
     }
     .row{
       width: 100%;
-      margin-top: 10px;
       height: 50px;
+      margin-top: 10px;
     }
     .button{
       border: 1px solid #dddddd;
@@ -26,11 +26,56 @@
       background-color: #eeeeee;
       border-color: #bbbbbb;
     }
+    #select{
+      width: 225px;
+      display: inline-block;
+    }
+    #save{
+      margin-left: 2.5px;
+      width: 65px;
+      display: inline-block;
+    }
+    #remove{
+      width: 300px;
+    }
+    #menu{
+      border: 1px solid #dddddd;
+      height: 25px;
+    }
+    .menu_item{
+      width: 97.6px;;
+      display: inline-block;
+      text-align: center;
+      line-height: 25px;
+      margin: 0px;
+      padding: 0px;
+    }
+    .menu_item:hover{
+      background-color: #eeeeee;
+    }
     label{
       line-height: 50px;
     }
     #filename_container{
-      height: 1em;
+      height: 10px;
+      line-height: 10px;
+    }
+    #stylesheet{
+      width: 75px;
+      display: inline-block;
+    }
+    #filename{
+      width: 215px;
+      display: inline-block;
+      margin-left: 5px;
+    }
+    .heading{
+      height: 25px;
+      border-bottom: 1px solid #dddddd;
+      line-height: 25px;
+    }
+    .heading h2{
+      margin: 0px;
     }
     /*Hidden so as not to interfere with clean UI*/
     #css_file{
@@ -48,18 +93,31 @@
   <div class="row">
     <h1>MD_Ext</h1>
   </div>
-  <div class="row" id="filename_container">
+  <div class="row" id="menu">
+    <div class="menu_item">Output</div>
+    <div class="menu_item">Content</div>
+    <div class="menu_item">Style</div>
+  </div>
+  <div class="row heading">
+    <h2 id="stylesheet">Default</h2>
+  </div>
+  <div class="row">
+    <div class="button">Sans-Serif</div>
+  </div>
+  <div class="row">
+    <div class="button">Serif</div>
+  </div>
+  <div class="row heading">
+    <h2 id="stylesheet">Custom:</h2>
     <div id="filename"></div>
   </div>
   <div class="row">
     <input id="css_file" name="fileEntry" type="file"></input>
-    <label class="button" for="css_file">Select Stylesheet</label>
+    <label class="button" id="select" for="css_file">Select Stylesheet</label>
+    <div class="button" id="save">Apply</div>
   </div>
   <div class="row">
-    <div class="button" id="save">Apply Stylesheet</div>
-  </div>
-  <div class="row">
-    <div class="button" id="remove">Remove Stylesheet</div>
+    <div class="button" id="remove">Remove</div>
   </div>
   <!--JS include must be last line in body for eventListeners to work-->
   <script src="action.js"></script>
