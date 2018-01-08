@@ -1,81 +1,63 @@
-chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
-  if (msg.text == "updateCSS") {
-    if(msg.from == "content.js"){
-      sendResponse({tab: sender.tab.id}); //sends tab ID to content script
-      var tabID = chrome.storage.local.set({tabID: sender.tab.id});
-    }
+var oldContent = "";
+var newContent = "";
 
-    /*
-    // Dec. 27, 2017
+chrome.runtime.onMessage.addListener(function(msg, sender){
+  if (msg.text == "watch"){
+    console.log(sender);
+    //var url = sender.url;
+    var tabId = sender.tab.id;
+    var windowId = sender.tab.windowId;
+    //poll(tabId); // call once then start loop b/c loop begins w/ delay
+    setInterval(function(){poll(tabId)}, 100); //repeating
 
-    // The following 3 lines implements the debugger API which is necessary for
-    // using the printToPDF function from within the browser. It does not work
-    // throwing the error,
-
-    // Unchecked runtime.lastError while running
-    // debugger.sendCommand: {"code":-32000,"message":"PrintToPDF is not
-    // implemented"}
-
-    // This is apparently because this function only works with headless Chrome
-    // despite it being listed in the debugger API for use with extensions. This
-    //  makes me hopeful that it will be implemented soon.
-    // -Chrome: v63.0, Canary: v65.0 both give the same error.
-
-    // Applicable documentation:
-    // https://developer.chrome.com/extensions/debugger
-    // https://developer.chrome.com/devtools/docs/integrating
-    // https://chromedevtools.github.io/devtools-protocol  (Page.printToPDF)
-
-    // ---
-
-    console.log(sender.tab.id);
-    chrome.debugger.attach({tabId:sender.tab.id}, "1.0");
-    chrome.debugger.sendCommand({tabId:sender.tab.id}, 'Page.printToPDF', function(data){console.log(data)});
-    */
+    // Fires when the page is refreshed
+    chrome.webNavigation.onCompleted.addListener(function(details){
+      if(details.tabId == tabId){
+        console.log("eureka!");
+        oldContent = newContent;
+        chrome.tabs.sendMessage(tabId, {text: "update", newContent: showdownCall(newContent)});
+      }
+    });
   }
-  //Working!!! commented out to stop it running!!  >_<
-  //setInterval(function(){check(sender)}, 1000);
-  //check(sender);
 });
 
-
-// Hackish way of converting symbol entities to symbols courtsey of,
-// https://stackoverflow.com/questions/7394748/whats-the-right-way-to-decode-a-string-that-has-special-html-entities-in-it/7394787#7394787
-function decodeHTML(html) {
-  var txt = document.createElement("textarea");
-  txt.innerHTML = html;
-  return txt.value;
-}
-
-function check(sender){
-  chrome.tabs.get(sender.tab.id, function(result){
-    console.log(result.url);
-    var blob = null;
+function poll(tabId){
+  var tab = chrome.tabs.get(tabId, function(tab){
+    var url = tab.url;
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", result.url);
+    xhr.open("GET", url);
     xhr.responseType = "blob";
     xhr.onload = function(){
-      blob = xhr.response;
-      console.log(blob);
       const reader = new FileReader();
-      reader.addEventListener('loadend', (e) => {
-        const contents = e.srcElement.result;
-        // The following line should not be necessary.  Do not write to
-        // storage.local if the file has not changed.  No sense in that.
-        chrome.storage.local.set({'updated_markdown': contents}, function(){
-          chrome.storage.local.get(['markdown','updated_markdown','tabID'], function(result){
-            if(decodeHTML(result.markdown) == decodeHTML(result.updated_markdown)){
-              console.log('same');
-            }
-            else{
-              console.log('not same');
-              chrome.tabs.reload(result.tabID);
-            }
-          });
-        })
-      });
-      reader.readAsBinaryString(blob);
+      reader.addEventListener('loadend', function(e){helper(reader, tabId, url, e)}, true);
+      reader.removeEventListener('loadend', function(e){helper(reader, tabId, url, e)}, true);
+      // Seems like a good idea to remove the listener immediately after its used
+      // Removing this line appears not to cause memory leak
+      reader.readAsText(xhr.response); // evaluate performance compared to other
+      // types of read operations,
+      // https://developer.mozilla.org/en-US/docs/Web/API/FileReader
     };
-    xhr.send()
+    xhr.send();
   });
+}
+
+function helper(reader, tabId, url, e){
+  console.log(url);
+  var newContent = e.srcElement.result;
+  if(oldContent == newContent){
+    console.log("Same . . .");
+  }
+  if(oldContent != newContent){
+    oldContent = newContent;
+    chrome.tabs.sendMessage(tabId, {text: "update", newContent: showdownCall(newContent)});
+    console.log("Different!");
+  }
+  reader = null;  // Definitely prevents memory leak. w/o this line, reader
+  // objects are never removed and accumulate
+}
+
+function showdownCall(newContent){
+	var converter = new showdown.Converter();
+	var html = converter.makeHtml(newContent);
+	return html;
 }

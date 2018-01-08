@@ -1,11 +1,10 @@
-chrome.extension.sendMessage({}, function(response) {
+chrome.extension.sendMessage({text: "watch"}, function(response) {
 	var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
 		clearInterval(readyStateCheckInterval);
-
 		// The following triggers when page is done loading
 		// ----------------------------------------------------------
-		showdownCall(mathjaxCall(applyStyle()));
+		mathjaxCall(applyStyle());
 		updateStyle(); // Update user_css on message from action.js
 		removeStyle(); // Remove contents of user_css on message from action.js
 
@@ -14,6 +13,13 @@ chrome.extension.sendMessage({}, function(response) {
 	}, 10);
 });
 
+chrome.extension.onMessage.addListener(function(msg){
+	if(msg.text == "update"){
+		document.getElementsByTagName('body')[0].innerHTML = msg.newContent;
+	}
+});
+
+/*
 // Runs Showdown on text in <pre> automatically added by browser
 function showdownCall(callback){
 	var markdown = document.getElementsByTagName("pre")[0].innerHTML;
@@ -22,6 +28,7 @@ function showdownCall(callback){
 	var html = converter.makeHtml(markdown);
 	document.body.innerHTML = html;
 }
+*/
 
 // Applys MathJax configuration and path to MathJax.js
 function mathjaxCall(callback){

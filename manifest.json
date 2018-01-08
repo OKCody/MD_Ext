@@ -20,7 +20,8 @@
     "<all_urls>",
     "tabs",
     "storage",
-    "debugger"
+    "debugger",
+    "webNavigation"
   ],
   "background": {
     "page": "/src/bg/background.html"
@@ -41,7 +42,6 @@
         "https://*/.md"
       ],
       "js": [
-        "/js/Showdown/dist/showdown.js",
         "/src/content/content.js"
       ]
     }
