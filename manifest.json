@@ -37,9 +37,7 @@
     },
     {
       "matches": [
-        "file:///*.md",
-        "http://*/.md",
-        "https://*/.md"
+        "file:///*.md"
       ],
       "js": [
         "/src/content/content.js"
