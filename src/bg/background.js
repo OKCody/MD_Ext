@@ -1,19 +1,30 @@
 var oldContent = "";
 var newContent = "";
 
+var tabId = "";
+
+xhr = new XMLHttpRequest();
+reader = new FileReader();
+
+xhr.onload = function(){
+  reader.readAsText(xhr.response);
+}
+
+reader.onload = function(e){
+  compare(e.srcElement.result);
+}
+
 chrome.runtime.onMessage.addListener(function(msg, sender){
   if (msg.text == "watch"){
-    console.log(sender);
-    //var url = sender.url;
-    var tabId = sender.tab.id;
+    tabId = sender.tab.id;
     var windowId = sender.tab.windowId;
-    //poll(tabId); // call once then start loop b/c loop begins w/ delay
-    setInterval(function(){poll(tabId)}, 100); //repeating
+    getFile(tabId);
+    setInterval(function(){getFile(tabId)}, 250);
 
     // Fires when the page is refreshed
     chrome.webNavigation.onCompleted.addListener(function(details){
       if(details.tabId == tabId){
-        console.log("eureka!");
+        console.log("Refresh");
         oldContent = newContent;
         chrome.tabs.sendMessage(tabId, {text: "update", newContent: showdownCall(newContent)});
       }
@@ -21,29 +32,19 @@ chrome.runtime.onMessage.addListener(function(msg, sender){
   }
 });
 
-function poll(tabId){
-  var tab = chrome.tabs.get(tabId, function(tab){
+function getFile(tabId){
+  chrome.tabs.get(tabId, function(tab){
     var url = tab.url;
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-    xhr.responseType = "blob";
-    xhr.onload = function(){
-      const reader = new FileReader();
-      reader.addEventListener('loadend', function(e){helper(reader, tabId, url, e)}, true);
-      reader.removeEventListener('loadend', function(e){helper(reader, tabId, url, e)}, true);
-      // Seems like a good idea to remove the listener immediately after its used
-      // Removing this line appears not to cause memory leak
-      reader.readAsText(xhr.response); // evaluate performance compared to other
-      // types of read operations,
-      // https://developer.mozilla.org/en-US/docs/Web/API/FileReader
-    };
-    xhr.send();
+    if(isAllowedURL(url)){
+      xhr.open("GET", url);
+      xhr.responseType = "blob";
+      xhr.send();
+    }
   });
 }
 
-function helper(reader, tabId, url, e){
-  console.log(url);
-  var newContent = e.srcElement.result;
+function compare(markdown){
+  var newContent = markdown;
   if(oldContent == newContent){
     console.log("Same . . .");
   }
@@ -52,12 +53,39 @@ function helper(reader, tabId, url, e){
     chrome.tabs.sendMessage(tabId, {text: "update", newContent: showdownCall(newContent)});
     console.log("Different!");
   }
-  reader = null;  // Definitely prevents memory leak. w/o this line, reader
-  // objects are never removed and accumulate
+  //xhr = null; // Might be a way to mitigate a memory leak
+  //reader = null; // Might be a way to mitigate a memory leak
+  delete xhr.onload;
+  delete reader.onload;
 }
 
 function showdownCall(newContent){
 	var converter = new showdown.Converter();
 	var html = converter.makeHtml(newContent);
 	return html;
+}
+
+function isAllowedURL(url){
+  // Create arrays of criteria which to check against
+  var protocols = ['file:']; // should be first 5 characters. http:, https, file:,
+  var extensions = ['md']; // should not include period
+  var protocol = url.slice(0, 5);
+  var extension = url.split('.').pop();
+  // Check against criteria
+  if(protocols.includes(protocol) && extensions.includes(extension)){
+    return true;
+  }
+  else{
+    return false;
+  }
+
+  /* from https://gist.github.com/jlong/2428561,
+  parser.protocol; // => "http:"
+  parser.hostname; // => "example.com"
+  parser.port;     // => "3000"
+  parser.pathname; // => "/pathname/"
+  parser.search;   // => "?search=test"
+  parser.hash;     // => "#hash"
+  parser.host;     // => "example.com:3000"
+  */
 }
