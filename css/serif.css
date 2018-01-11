@@ -1,0 +1,27 @@
+html{
+  width: 8.5in;
+  height: 11in;
+  padding: .5in;
+  font-family: serif;
+  -webkit-print-color-adjust: exact; /* Forces print dialog to adhere to CSS*/
+}
+h2{
+  display: block;
+  border-bottom: 1px solid #DDDDDD;
+  margin-top: 1em;
+}
+pre{
+  display: block;
+  width: 80ch; /* classic terminal width for code sections */
+  margin-left: 2em;
+  overflow: scroll;
+  background-color: #EEEEEE !important;
+  padding: 1em;
+  page-break-inside: avoid;
+}
+img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 400px;
+}
