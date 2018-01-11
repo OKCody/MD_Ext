@@ -6,30 +6,13 @@ chrome.extension.sendMessage({text: "watch"}, function(response){
 		// ----------------------------------------------------------
 
 		mathjaxCall(applyStyle());
-		updateStyle(); // Update user_css on message from action.js
-		removeStyle(); // Remove contents of user_css on message from action.js
+		addListeners();
+
 
 		// ----------------------------------------------------------
 		}
 	}, 10);
 });
-
-chrome.extension.onMessage.addListener(function(msg){
-	if(msg.text == "update"){
-		document.getElementsByTagName('body')[0].innerHTML = msg.newContent;
-	}
-});
-
-/*
-// Runs Showdown on text in <pre> automatically added by browser
-function showdownCall(callback){
-	var markdown = document.getElementsByTagName("pre")[0].innerHTML;
-	chrome.storage.local.set({'markdown': markdown});
-	var converter = new showdown.Converter();
-	var html = converter.makeHtml(markdown);
-	document.body.innerHTML = html;
-}
-*/
 
 // Applys MathJax configuration and path to MathJax.js
 function mathjaxCall(callback){
@@ -64,38 +47,22 @@ function applyStyle(){
 	});
 }
 
-// Listens for message from action.js and applys user-selected style
-function updateStyle(){
-	console.log("updateInitialized");
+function addListeners(){
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
-		console.log(msg.text);
-		console.log(msg.from);
-		if (msg.text == "updateStyle"){
-			if(msg.from == "action.js"){
-				console.log("updateStyle");
-				chrome.storage.local.get('style', function(result){
-					document.getElementById('user_css').innerHTML = result.style;
-				});
-			}
+		if(msg.text == "updateStyle"){
+			console.log("updateStyle");
+			chrome.storage.local.get('style', function(result){
+				document.getElementById('user_css').innerHTML = result.style;
+			});
 		}
-	});
-}
-
-// Listens for message from action.js and removes contents of user_css instead
-// of removing entire tag because subsequent styles applied rely on there being
-// an element with id="user_css"
-// Also sets 'style' in local storage to empty string
-function removeStyle(){
-	console.log("removeIitialized");
-	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
-		console.log(msg.text);
-		console.log(msg.from);
-		if (msg.text == "removeStyle"){
-			if(msg.from == "action.js"){
-				console.log("removeStyle");
-				chrome.storage.local.set({'style': ""});
-				document.getElementById('user_css').innerHTML = "";
-			}
+		if(msg.text == "removeStyle"){
+			console.log("removeStyle");
+			chrome.storage.local.set({'style': ""});
+			document.getElementById('user_css').innerHTML = "";
+		}
+		if(msg.text == "updateBody"){
+			console.log("updateBody");
+			document.getElementsByTagName('body')[0].innerHTML = msg.newContent;
 		}
 	});
 }

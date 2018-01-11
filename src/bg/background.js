@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender){
       if(details.tabId == tabId){
         console.log("Refresh");
         oldContent = newContent;
-        chrome.tabs.sendMessage(tabId, {text: "update", newContent: showdownCall(newContent)});
+        chrome.tabs.sendMessage(tabId, {text: "updateBody", newContent: showdownCall(newContent)});
       }
     });
   }
@@ -69,7 +69,7 @@ function compare(markdown){
   }
   if(oldContent != newContent){
     oldContent = newContent;
-    chrome.tabs.sendMessage(tabId, {text: "update", newContent: showdownCall(newContent)});
+    chrome.tabs.sendMessage(tabId, {text: "updateBody", newContent: showdownCall(newContent)});
     console.log("Different!");
   }
   //xhr = null; // Might be a way to mitigate a memory leak
