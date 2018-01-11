@@ -1,9 +1,10 @@
-chrome.extension.sendMessage({text: "watch"}, function(response) {
+chrome.extension.sendMessage({text: "watch"}, function(response){
 	var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
 		clearInterval(readyStateCheckInterval);
 		// The following triggers when page is done loading
 		// ----------------------------------------------------------
+
 		mathjaxCall(applyStyle());
 		updateStyle(); // Update user_css on message from action.js
 		removeStyle(); // Remove contents of user_css on message from action.js
@@ -52,7 +53,9 @@ function mathjaxCall(callback){
 
 // Applys most recently saved style to page
 function applyStyle(){
+	console.log("applyInitialized");
 	chrome.storage.local.get(['style'], function(result){
+		console.log("applyStyle");
 		var style = document.createElement("style");
 		style.type = 'text/css';
 		style.id = 'user_css';
@@ -63,9 +66,13 @@ function applyStyle(){
 
 // Listens for message from action.js and applys user-selected style
 function updateStyle(){
+	console.log("updateInitialized");
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
+		console.log(msg.text);
+		console.log(msg.from);
 		if (msg.text == "updateStyle"){
 			if(msg.from == "action.js"){
+				console.log("updateStyle");
 				chrome.storage.local.get('style', function(result){
 					document.getElementById('user_css').innerHTML = result.style;
 				});
@@ -79,9 +86,13 @@ function updateStyle(){
 // an element with id="user_css"
 // Also sets 'style' in local storage to empty string
 function removeStyle(){
+	console.log("removeIitialized");
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
+		console.log(msg.text);
+		console.log(msg.from);
 		if (msg.text == "removeStyle"){
 			if(msg.from == "action.js"){
+				console.log("removeStyle");
 				chrome.storage.local.set({'style': ""});
 				document.getElementById('user_css').innerHTML = "";
 			}
