@@ -3,6 +3,9 @@ var newContent = "";
 
 var tabId = "";
 
+var errorCount = 0;
+var pollingInterval;
+
 xhr = new XMLHttpRequest();
 reader = new FileReader();
 
@@ -14,12 +17,28 @@ reader.onload = function(e){
   compare(e.srcElement.result);
 }
 
+// In the event that the content is not able to be loaded after 5 attempts
+// exit polling loop with error.
+xhr.onerror = function(){
+  console.log("XHR Error");
+  if(errorCount >=4){
+    clearInterval(pollingInterval); // Stops polling on 5th error
+    console.log("Markdown file was possibly deleted.");
+    console.log("Polling stopped. Refresh content page to restart.");
+  }
+  errorCount = errorCount + 1;
+}
+
 chrome.runtime.onMessage.addListener(function(msg, sender){
+  errorCount = 0;
   if (msg.text == "watch"){
+    console.log(sender);
+    chrome.storage.local.set({'tabId':sender.tab.id}); // action.js depends on this.
     tabId = sender.tab.id;
     var windowId = sender.tab.windowId;
+    chrome.browserAction.setIcon({path: '/icons/icon48.png', tabId: tabId});
     getFile(tabId);
-    setInterval(function(){getFile(tabId)}, 250);
+    pollingInterval = setInterval(function(){getFile(tabId)}, 250);
 
     // Fires when the page is refreshed
     chrome.webNavigation.onCompleted.addListener(function(details){
@@ -78,14 +97,4 @@ function isAllowedURL(url){
   else{
     return false;
   }
-
-  /* from https://gist.github.com/jlong/2428561,
-  parser.protocol; // => "http:"
-  parser.hostname; // => "example.com"
-  parser.port;     // => "3000"
-  parser.pathname; // => "/pathname/"
-  parser.search;   // => "?search=test"
-  parser.hash;     // => "#hash"
-  parser.host;     // => "example.com:3000"
-  */
 }
