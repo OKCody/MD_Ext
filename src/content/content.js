@@ -36,7 +36,6 @@ function mathjaxCall(callback){
 
 // Applys most recently saved style to page
 function applyStyle(){
-	console.log("applyInitialized");
 	chrome.storage.local.get(['style'], function(result){
 		console.log("applyStyle");
 		var style = document.createElement("style");
@@ -62,7 +61,7 @@ function addListeners(){
 		}
 		if(msg.text == "updateBody"){
 			console.log("updateBody");
-			document.getElementsByTagName('body')[0].innerHTML = msg.newContent;
+			document.getElementsByTagName('body')[0].innerHTML = msg.content;
 		}
 	});
 }
