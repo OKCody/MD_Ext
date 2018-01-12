@@ -48,8 +48,29 @@ function applyStyle(){
 
 function addListeners(){
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
+		if(msg.text == "updateStyleFile"){
+			console.log("updateStyleFile");
+			chrome.storage.local.get('styleFile', function(result){
+				if(document.getElementById('user_css')){
+					document.getElementById('user_css').remove();
+				}
+				var link = document.createElement("link");
+				link.type = 'text/css';
+				link.id = 'user_css';
+				link.rel = 'stylesheet';
+				link.href = chrome.runtime.getURL(result.styleFile);
+				document.getElementsByTagName("head")[0].appendChild(link);
+			});
+		}
 		if(msg.text == "updateStyle"){
 			console.log("updateStyle");
+			if(document.getElementById('user_css')){
+				document.getElementById('user_css').remove();
+			}
+			var style = document.createElement("style");
+			style.type = 'text/css';
+			style.id = 'user_css';
+			document.getElementsByTagName("head")[0].appendChild(style);
 			chrome.storage.local.get('style', function(result){
 				document.getElementById('user_css').innerHTML = result.style;
 			});
@@ -57,7 +78,9 @@ function addListeners(){
 		if(msg.text == "removeStyle"){
 			console.log("removeStyle");
 			chrome.storage.local.set({'style': ""});
-			document.getElementById('user_css').innerHTML = "";
+			if(document.getElementById('user_css')){
+				document.getElementById('user_css').remove();
+			}
 		}
 		if(msg.text == "updateBody"){
 			console.log("updateBody");

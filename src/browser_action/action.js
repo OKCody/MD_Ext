@@ -1,73 +1,75 @@
 // Event Listeners
 
-document.getElementById("save").addEventListener("click", saveStyle);
+//document.getElementById("save").addEventListener("click", saveStyle);
 
-document.getElementById("remove").addEventListener("click", removeStyle);
+//document.getElementById("remove").addEventListener("click", removeStyle);
 
 document.getElementById("css_file").addEventListener("change", showFilename);
-/*
-document.getElementById("sans-serif").addEventListener("click", applySans_Serif);
 
-document.getElementById("serif").addEventListener("click", applySerif);
-*/
-// ----------------------------------------------------------
-/*
-function getContent(url){
-
-  return content;
+//document.getElementsByClassName("stylesheet_btn").addEventListener("click", test);
+var buttons = document.getElementsByClassName("button");
+for (var i = 0 ; i < buttons.length; i++) {
+   buttons[i].addEventListener('click', buttonClick, false);
 }
 
-function idToURL(id){
+var style = "";
+var tabId = "";
+chrome.storage.local.get('tabId', function(tab){
+  tabId = tab.tabId;
+});
 
-  return url;
+buttonClick();
+
+function buttonClick(){
+  id = this.id;
+
+  console.log(id);
+  console.log(tabId);
+
+  if(id == "sans-serif"){
+    console.log("sans-serif");
+    chrome.storage.local.set({'styleFile': "/css/sans-serif.css"});
+    chrome.tabs.sendMessage(tabId,{ text: "updateStyleFile", from: "action.js"});
+  }
+  if(id == "serif"){
+    console.log("serif");
+    chrome.storage.local.set({'styleFile': "/css/serif.css"});
+    chrome.tabs.sendMessage(tabId,{ text: "updateStyleFile", from: "action.js"});
+  }
+  if(id == "ieee"){
+    console.log("ieee");
+    chrome.storage.local.set({'styleFile': "/css/pubcss/dist/css/pubcss-ieee.css"});
+    chrome.tabs.sendMessage(tabId,{ text: "updateStyleFile", from: "action.js"});
+  }
+  if(id == "acm"){
+    console.log("acm");
+    chrome.storage.local.set({'styleFile': "/css/pubcss/dist/css/pubcss-acm-sig.css"});
+    chrome.tabs.sendMessage(tabId,{ text: "updateStyleFile", from: "action.js"});
+  }
+  if(id == "save"){
+    console.log("save");
+    chrome.storage.local.set({'style': style});
+    chrome.tabs.sendMessage(tabId,{ text: "updateStyle", from: "action.js"});
+  }
+  if(id == "remove"){
+    console.log("remove");
+    chrome.tabs.sendMessage(tabId, { text: "removeStyle", from: "action.js"});
+  }
 }
 
-function applyStyle(content, callback){
 
-  callback();
-}
-
-function sendMessage(payload, from){
-
-}
-*/
-// Call the above functions which should be generalized and contained in a helper.js file that is accessible by all contexts.
-
-//applyStyle(getContent("style/sheet/url")), sendMessage("updateStyle","action.js"));
-
-// Event Functions
-
-/*
-function applySans_Serif(){
-  console.log("Sans-Serif");
-  removeStyle();
-  getCSS("/css/sans-serif.css");
-  chrome.storage.local.get('tabId', function(tab){
-    chrome.tabs.sendMessage(tab.tabId,{ text: "updateStyle", from: "action.js"})
-  });
-}
-function applySerif(){
-  console.log("Serif");
-  removeStyle();
-}
-
-*/
 function saveStyle(){
   console.log("saveStyle");
   var file = document.getElementById('css_file').files[0];
   //https://medium.com/programmers-developers/convert-blob-to-string-in-javascript-944c15ad7d52
   const reader = new FileReader();
   reader.addEventListener('loadend', (e) => {
-    const style = e.srcElement.result;
-    // background.js depends on style being saved in local storage
-    chrome.storage.local.set({'style': style});
-    chrome.storage.local.get('tabId', function(tab){
-      chrome.tabs.sendMessage(tab.tabId,{ text: "updateStyle", from: "action.js"})
-    });
+    style = e.srcElement.result;
   });
-  reader.readAsBinaryString(file);
+  reader.readAsText(file);
 }
 
+/*
 function removeStyle(){
   console.log("removeStyle");
   chrome.storage.local.get('tabId', function(tab){
@@ -75,27 +77,9 @@ function removeStyle(){
     chrome.tabs.sendMessage(tab.tabId, { text: "removeStyle", from: "action.js"});
   });
 }
+*/
 
 function showFilename(){
   document.getElementById('filename').innerHTML = document.getElementById('css_file').value.replace("C:\\fakepath\\", "");
+  saveStyle();
 }
-/*
-
-xhr = new XMLHttpRequest();
-reader = new FileReader();
-
-xhr.onload = function(){
-  reader.readAsText(xhr.response);
-}
-
-reader.onload = function(e){
-  var style = e.srcElement.result;
-  chrome.storage.local.set({'style': style});
-}
-
-function getCSS(path){
-  xhr.open("GET", path);
-  xhr.responseType = "blob";
-  xhr.send();
-}
-*/
