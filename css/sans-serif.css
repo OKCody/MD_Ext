@@ -2,7 +2,7 @@ html{
   width: 8.5in;
   height: 11in;
   padding: .5in;
-  font-family: serif;
+  font-family: sans-serif;
   -webkit-print-color-adjust: exact; /* Forces print dialog to adhere to CSS*/
 }
 h2{

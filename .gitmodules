@@ -4,3 +4,6 @@
 [submodule "js/Showdown"]
 	path = js/Showdown
 	url = https://github.com/showdownjs/showdown.git
+[submodule "css/pubcss"]
+	path = css/pubcss
+	url = https://github.com/thomaspark/pubcss.git
