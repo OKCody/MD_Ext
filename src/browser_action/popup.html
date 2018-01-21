@@ -94,36 +94,42 @@
     <h1>MD_Ext</h1>
   </div>
   <div class="row" id="menu">
-    <div class="menu_item" id="output_btn">Output</div>
-    <div class="menu_item" id="content_btn">Content</div>
-    <div class="menu_item" id="style_btn">Style</div>
+    <div class="menu_item click" id="output_btn">Output</div>
+    <div class="menu_item click" id="content_btn">Content</div>
+    <div class="menu_item click" id="style_btn">Style</div>
   </div>
-  <div class="row heading">
-    <h2 id="stylesheet">Default</h2>
+  <div id="outputPage">
   </div>
-  <div class="row">
-    <div class="button" id="sans-serif">Sans-Serif</div>
+  <div id="contentPage">
   </div>
-  <div class="row">
-    <div class="button" id="serif">Serif</div>
-  </div>
-  <div class="row">
-    <div class="button" id="ieee">IEEE</div>
-  </div>
-  <div class="row">
-    <div class="button" id="acm">ACM</div>
-  </div>
-  <div class="row heading">
-    <h2 id="stylesheet">Custom:</h2>
-    <div id="filename"></div>
-  </div>
-  <div class="row">
-    <input id="css_file" name="fileEntry" type="file"></input>
-    <label class="button" id="select" for="css_file">Select Stylesheet</label>
-    <div class="button" id="save">Apply</div>
-  </div>
-  <div class="row">
-    <div class="button" id="remove">Remove</div>
+  <div id="stylePage">
+    <div class="row heading">
+      <h2 id="stylesheet">Default</h2>
+    </div>
+    <div class="row">
+      <div class="button click" id="sans-serif">Sans-Serif</div>
+    </div>
+    <div class="row">
+      <div class="button click" id="serif">Serif</div>
+    </div>
+    <div class="row">
+      <div class="button click" id="ieee">IEEE</div>
+    </div>
+    <div class="row">
+      <div class="button click" id="acm">ACM</div>
+    </div>
+    <div class="row heading">
+      <h2 id="stylesheet">Custom:</h2>
+      <div id="filename"></div>
+    </div>
+    <div class="row">
+      <input id="css_file" name="fileEntry" type="file"></input>
+      <label class="button click" id="select" for="css_file">Select Stylesheet</label>
+      <div class="button click" id="save">Apply</div>
+    </div>
+    <div class="row">
+      <div class="button click" id="remove">Remove</div>
+    </div>
   </div>
   <!--JS include must be last line in body for eventListeners to work-->
   <script src="action.js"></script>

@@ -7,9 +7,9 @@
 document.getElementById("css_file").addEventListener("change", showFilename);
 
 //document.getElementsByClassName("stylesheet_btn").addEventListener("click", test);
-var buttons = document.getElementsByClassName("button");
-for (var i = 0 ; i < buttons.length; i++) {
-   buttons[i].addEventListener('click', buttonClick, false);
+var clicks = document.getElementsByClassName("click");
+for (var i = 0 ; i < clicks.length; i++) {
+   clicks[i].addEventListener('click', buttonClick, false);
 }
 
 var style = "";
@@ -26,6 +26,24 @@ function buttonClick(){
   console.log(id);
   console.log(tabId);
 
+  if(id == "output_btn"){
+    console.log("output_btn");
+    document.getElementById("outputPage").style.display = "block";
+    document.getElementById("contentPage").style.display = "none";
+    document.getElementById("stylePage").style.display = "none";
+  }
+  if(id == "content_btn"){
+    console.log("content_btn");
+    document.getElementById("outputPage").style.display = "none";
+    document.getElementById("contentPage").style.display = "block";
+    document.getElementById("stylePage").style.display = "none";
+  }
+  if(id == "style_btn"){
+    console.log("style_btn");
+    document.getElementById("outputPage").style.display = "none";
+    document.getElementById("contentPage").style.display = "none";
+    document.getElementById("stylePage").style.display = "block";
+  }
   if(id == "sans-serif"){
     console.log("sans-serif");
     chrome.storage.local.set({'styleFile': "/css/sans-serif.css"});
