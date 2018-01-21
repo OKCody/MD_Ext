@@ -9,7 +9,12 @@ getFile(document.URL);
 pollingInterval = setInterval(function(){getFile(document.URL)}, 250);
 
 xhr.onload = function(){
-  reader.readAsText(xhr.response);
+  // Occasionally a read is attempted while a read is in progress. -not under
+  // normal conditions, rather when the machine was put to sleep with the
+  // extension running it will throw an error on wake-up
+  if(reader.readyState != 1){
+    reader.readAsText(xhr.response);
+  }
 }
 
 reader.onload = function(e){
@@ -18,7 +23,6 @@ reader.onload = function(e){
   }
   else{
     oldContent = e.srcElement.result;
-    //chrome.tabs.sendMessage(tabId, {text: "updateBody", content: html});
     document.getElementsByTagName('body')[0].innerHTML = showdownCall(e.srcElement.result);
   }
   //xhr = null; // Might be a way to mitigate a memory leak

@@ -6,7 +6,11 @@ chrome.extension.sendMessage({text: "watch"}, function(response){
 		// The following triggers when page is done loading
 		// ----------------------------------------------------------
 
-		mathjaxCall(applyStyle());
+		mathjaxCall();
+		chrome.storage.local.get(['style'], function(result){
+			console.log(result);
+			applyStyle(result.style.method, result.style);
+		});
 		addListeners();
 
 		// ----------------------------------------------------------
@@ -42,6 +46,7 @@ function mathjaxCall(callback){
 	document.getElementsByTagName("head")[0].appendChild(script);
 }
 
+/*
 // Applys most recently saved style to page
 function applyStyle(){
 	chrome.storage.local.get(['style'], function(result){
@@ -53,44 +58,49 @@ function applyStyle(){
 		document.getElementsByTagName("head")[0].appendChild(style);
 	});
 }
+*/
+
+function applyStyle(method, parameters){
+	console.log(parameters);
+	if(method == "external"){
+		if(document.getElementById('user_css')){
+			document.getElementById('user_css').remove();
+		}
+		var link = document.createElement("link");
+		console.log(parameters);
+		link.type = parameters.type;
+		link.id = parameters.id;
+		link.rel = parameters.rel;
+		link.href = chrome.runtime.getURL(parameters.href);
+		document.getElementsByTagName("head")[0].appendChild(link);
+		chrome.storage.local.set({'style': parameters});
+		console.log(link);
+	}
+	if(method == "internal"){
+		if(document.getElementById('user_css')){
+			document.getElementById('user_css').remove();
+		}
+		var style = document.createElement("style");
+		style.type = parameters.type;
+		style.id = parameters.id;
+		style.innerHTML = parameters.innerHTML;
+		document.getElementsByTagName("head")[0].appendChild(style);
+		chrome.storage.local.set({'style': parameters});
+	}
+	if(method == "none"){
+		if(document.getElementById('user_css')){
+			document.getElementById('user_css').remove();
+		}
+		chrome.storage.local.set({'style': parameters});
+	}
+}
 
 function addListeners(){
 	console.log("Event Listeners Added");
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
 		console.log("Message Received");
-		if(msg.text == "updateStyleFile"){
-			console.log("updateStyleFile");
-			chrome.storage.local.get('styleFile', function(result){
-				if(document.getElementById('user_css')){
-					document.getElementById('user_css').remove();
-				}
-				var link = document.createElement("link");
-				link.type = 'text/css';
-				link.id = 'user_css';
-				link.rel = 'stylesheet';
-				link.href = chrome.runtime.getURL(result.styleFile);
-				document.getElementsByTagName("head")[0].appendChild(link);
-			});
-		}
-		if(msg.text == "updateStyle"){
-			console.log("updateStyle");
-			if(document.getElementById('user_css')){
-				document.getElementById('user_css').remove();
-			}
-			var style = document.createElement("style");
-			style.type = 'text/css';
-			style.id = 'user_css';
-			document.getElementsByTagName("head")[0].appendChild(style);
-			chrome.storage.local.get('style', function(result){
-				document.getElementById('user_css').innerHTML = result.style;
-			});
-		}
-		if(msg.text == "removeStyle"){
-			console.log("removeStyle");
-			chrome.storage.local.set({'style': ""});
-			if(document.getElementById('user_css')){
-				document.getElementById('user_css').remove();
-			}
+		if(msg.text == "style"){
+			applyStyle(msg.parameters.method, msg.parameters);
 		}
 		if(msg.text == "updateBody"){
 			console.log("updateBody");

@@ -1,21 +1,26 @@
+var tabId;
+var style = {
+  method: "", // internal/external
+  id: "user_css",
+  type: "text/css",
+  rel: "stylesheet",
+  href: "",
+  innerHTML: ""
+};
+
 // Event Listeners
-
-//document.getElementById("save").addEventListener("click", saveStyle);
-
-//document.getElementById("remove").addEventListener("click", removeStyle);
 
 document.getElementById("css_file").addEventListener("change", showFilename);
 
-//document.getElementsByClassName("stylesheet_btn").addEventListener("click", test);
 var clicks = document.getElementsByClassName("click");
 for (var i = 0 ; i < clicks.length; i++) {
    clicks[i].addEventListener('click', buttonClick, false);
 }
 
-var style = "";
-var tabId = "";
-chrome.storage.local.get('tabId', function(tab){
-  tabId = tab.tabId;
+// /Event Listeners
+
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+  tabId = parseInt(tabs[0].id);
 });
 
 buttonClick();
@@ -45,59 +50,39 @@ function buttonClick(){
     document.getElementById("stylePage").style.display = "block";
   }
   if(id == "sans-serif"){
-    console.log("sans-serif");
-    chrome.storage.local.set({'styleFile': "/css/sans-serif.css"});
-    chrome.tabs.sendMessage(tabId,{ text: "updateStyleFile", from: "action.js"});
+    style.method = "external";
+    style.href = "/css/sans-serif.css";
   }
   if(id == "serif"){
-    console.log("serif");
-    chrome.storage.local.set({'styleFile': "/css/serif.css"});
-    chrome.tabs.sendMessage(tabId,{ text: "updateStyleFile", from: "action.js"});
+    style.method = "external";
+    style.href = "/css/serif.css";
   }
   if(id == "ieee"){
-    console.log("ieee");
-    chrome.storage.local.set({'styleFile': "/css/pubcss/dist/css/pubcss-ieee.css"});
-    chrome.tabs.sendMessage(tabId,{ text: "updateStyleFile", from: "action.js"});
+    style.method = "external";
+    style.href = "/css/pubcss/dist/css/pubcss-ieee.css";
   }
   if(id == "acm"){
-    console.log("acm");
-    chrome.storage.local.set({'styleFile': "/css/pubcss/dist/css/pubcss-acm-sig.css"});
-    chrome.tabs.sendMessage(tabId,{ text: "updateStyleFile", from: "action.js"});
-  }
-  if(id == "save"){
-    console.log("save");
-    chrome.storage.local.set({'style': style});
-    chrome.tabs.sendMessage(tabId,{ text: "updateStyle", from: "action.js"});
+    style.method = "external";
+    style.href = "/css/pubcss/dist/css/pubcss-acm-sig.css";
   }
   if(id == "remove"){
-    console.log("remove");
-    chrome.tabs.sendMessage(tabId, { text: "removeStyle", from: "action.js"});
+    style.method = "none";
   }
+  if(id == "save"){
+    style.method = "internal";
+    var file = document.getElementById('css_file').files[0];
+    //https://medium.com/programmers-developers/convert-blob-to-string-in-javascript-944c15ad7d52
+    const reader = new FileReader();
+    reader.addEventListener('loadend', (e) => {
+      style.innerHTML = e.srcElement.result;
+      console.log(style);
+    });
+    reader.readAsText(file);
+  }
+  console.log(typeof tabId);
+  chrome.tabs.sendMessage(parseInt(tabId), {text: "style", parameters: style});
 }
-
-
-function saveStyle(){
-  console.log("saveStyle");
-  var file = document.getElementById('css_file').files[0];
-  //https://medium.com/programmers-developers/convert-blob-to-string-in-javascript-944c15ad7d52
-  const reader = new FileReader();
-  reader.addEventListener('loadend', (e) => {
-    style = e.srcElement.result;
-  });
-  reader.readAsText(file);
-}
-
-/*
-function removeStyle(){
-  console.log("removeStyle");
-  chrome.storage.local.get('tabId', function(tab){
-    console.log(tab);
-    chrome.tabs.sendMessage(tab.tabId, { text: "removeStyle", from: "action.js"});
-  });
-}
-*/
 
 function showFilename(){
   document.getElementById('filename').innerHTML = document.getElementById('css_file').value.replace("C:\\fakepath\\", "");
-  saveStyle();
 }
