@@ -21,9 +21,6 @@
     "debugger",
     "webNavigation"
   ],
-  "background": {
-    "page": "/src/bg/background.html"
-  },
   "content_scripts": [
     {
       "matches": [
@@ -38,7 +35,9 @@
         "file:///*.md"
       ],
       "js": [
-        "/src/content/content.js"
+        "/src/content/content.js",
+        "/js/Showdown/dist/showdown.js",
+        "/src/content/content2.js"
       ]
     }
   ],

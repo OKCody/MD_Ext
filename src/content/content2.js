@@ -1,67 +1,31 @@
 var oldContent = "";
-var newContent = "";
-var content = ""; // Needs to be global
-var html = "";
-
-var tabId = "";
-var url = "";
-
 var errorCount = 0;
 var pollingInterval;
 
 xhr = new XMLHttpRequest();
 reader = new FileReader();
 
-chrome.runtime.onMessage.addListener(function(msg, sender){
-  errorCount = 0;
-  if (msg.text == "watch"){
-    console.log("watch");
-    chrome.storage.local.set({'tabId':sender.tab.id}); // action.js depends on this.
-    tabId = sender.tab.id;
-    url = sender.url;
-    chrome.browserAction.setIcon({path: '/icons/icon48.png', tabId: tabId});
-    console.log(tabId);
-    chrome.tabs.sendMessage(tabId, {text: "updateBody", content: html});
-    getFile(url);
-    pollingInterval = setInterval(function(){getFile(url)}, 250);
-
-    // Fires when the page is refreshed
-    /*
-    chrome.webNavigation.onCompleted.addListener(function(details){
-      console.log(details.tabId);
-      console.log(tabId);
-      if(details.tabId == tabId){
-        oldContent = content;
-        console.log("refresh");
-
-        chrome.tabs.sendMessage(tabId, {text: "updateBody", content: html});
-      }
-    });
-    */
-  }
-});
+getFile(document.URL);
+pollingInterval = setInterval(function(){getFile(document.URL)}, 250);
 
 xhr.onload = function(){
   reader.readAsText(xhr.response);
 }
 
 reader.onload = function(e){
-  content = e.srcElement.result;
-  if(compare(content, oldContent)){
+  if(compare(e.srcElement.result, oldContent)){
     // Do nothing if no change
   }
   else{
-    oldContent = content;
-    html = showdownCall(content);
-    chrome.tabs.sendMessage(tabId, {text: "updateBody", content: html});
+    oldContent = e.srcElement.result;
+    //chrome.tabs.sendMessage(tabId, {text: "updateBody", content: html});
+    document.getElementsByTagName('body')[0].innerHTML = showdownCall(e.srcElement.result);
   }
   //xhr = null; // Might be a way to mitigate a memory leak
   //reader = null; // Might be a way to mitigate a memory leak
   delete xhr.onload;
   delete reader.onload;
   delete reader.result;
-  //console.log(xhr);
-  //console.log(reader);
 }
 
 // In the event that the content is not able to be loaded after 5 attempts

@@ -1,3 +1,4 @@
+
 chrome.extension.sendMessage({text: "watch"}, function(response){
 	var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
@@ -8,7 +9,6 @@ chrome.extension.sendMessage({text: "watch"}, function(response){
 		mathjaxCall(applyStyle());
 		addListeners();
 
-
 		// ----------------------------------------------------------
 		}
 	}, 10);
@@ -16,6 +16,9 @@ chrome.extension.sendMessage({text: "watch"}, function(response){
 
 // Applys MathJax configuration and path to MathJax.js
 function mathjaxCall(callback){
+	if(document.getElementById('mathjax_config')){
+		document.getElementById('mathjax_config').remove();
+	}
 	var script = document.createElement("script");
 		script.type = "text/x-mathjax-config";
 		script.text = 'MathJax.Hub.Config({' +
@@ -26,9 +29,14 @@ function mathjaxCall(callback){
 					'processEscapes: true,' +
 			'},' +
 	'});';
+	script.id = "mathjax_config"
 	document.getElementsByTagName("head")[0].appendChild(script);
+	if(document.getElementById('mathjax')){
+		document.getElementById('mathjax').remove();
+	}
 	var script = document.createElement("script");
 	script.type = "text/javascript";
+	script.id = "mathjax";
 	script.src = chrome.runtime.getURL("/js/MathJax/unpacked/MathJax.js");
 	script.setAttribute('async','');
 	document.getElementsByTagName("head")[0].appendChild(script);
@@ -47,7 +55,9 @@ function applyStyle(){
 }
 
 function addListeners(){
+	console.log("Event Listeners Added");
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
+		console.log("Message Received");
 		if(msg.text == "updateStyleFile"){
 			console.log("updateStyleFile");
 			chrome.storage.local.get('styleFile', function(result){
