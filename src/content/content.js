@@ -1,5 +1,5 @@
 
-chrome.extension.sendMessage({text: "watch"}, function(response){
+chrome.extension.sendMessage({text: "active"}, function(response){
 	var readyStateCheckInterval = setInterval(function() {
 	if (document.readyState === "complete") {
 		clearInterval(readyStateCheckInterval);
@@ -8,16 +8,15 @@ chrome.extension.sendMessage({text: "watch"}, function(response){
 
 		mathjaxCall();
 		chrome.storage.local.get(['style'], function(result){
-			console.log(result);
 			applyStyle(result.style.method, result.style);
 		});
 		addListeners();
-
 		// ----------------------------------------------------------
 		}
 	}, 10);
 });
 
+/*
 // Applys MathJax configuration and path to MathJax.js
 function mathjaxCall(callback){
 	if(document.getElementById('mathjax_config')){
@@ -45,36 +44,47 @@ function mathjaxCall(callback){
 	script.setAttribute('async','');
 	document.getElementsByTagName("head")[0].appendChild(script);
 }
-
-/*
-// Applys most recently saved style to page
-function applyStyle(){
-	chrome.storage.local.get(['style'], function(result){
-		console.log("applyStyle");
-		var style = document.createElement("style");
-		style.type = 'text/css';
-		style.id = 'user_css';
-		style.innerHTML = result.style;
-		document.getElementsByTagName("head")[0].appendChild(style);
-	});
-}
 */
 
+function mathjaxCall(){
+	var script = document.createElement("script");
+  script.type = "text/javascript";
+	script.id = "mathjax";
+  script.src = chrome.runtime.getURL("/js/MathJax/unpacked/MathJax.js");
+  var config = 'MathJax.Hub.Config({' +
+                 'extensions: ["tex2jax.js"],' +
+                 'jax: ["input/TeX","output/HTML-CSS"]' +
+               '});' +
+               'MathJax.Hub.Startup.onload();' +
+// MathJax.Hub.Register.StartupHook("End", function(){ . . . }) runs when
+// MathJax is loaded and ready. To signify this to other functions that depend
+// on this being true, the ID of the <script> tag where MathJax is loaded and
+// configured changes from mathjax () to mathjaxReady. For example, this is
+// checked after the body is updated by showdownCall. If id = "mathjasReady" is
+// found a script is written to <head> that updates all math on page.
+							 'MathJax.Hub.Register.StartupHook("End",function () {' +
+							 		//'console.log("mathjax ready");' +
+									'document.getElementById("mathjax").id = "mathjaxReady";' +
+							 '});';
+
+  if (window.opera) {script.innerHTML = config}
+               else {script.text = config}
+
+  document.getElementsByTagName("head")[0].appendChild(script);
+}
+
 function applyStyle(method, parameters){
-	console.log(parameters);
 	if(method == "external"){
 		if(document.getElementById('user_css')){
 			document.getElementById('user_css').remove();
 		}
 		var link = document.createElement("link");
-		console.log(parameters);
 		link.type = parameters.type;
 		link.id = parameters.id;
 		link.rel = parameters.rel;
 		link.href = chrome.runtime.getURL(parameters.href);
 		document.getElementsByTagName("head")[0].appendChild(link);
 		chrome.storage.local.set({'style': parameters});
-		console.log(link);
 	}
 	if(method == "internal"){
 		if(document.getElementById('user_css')){
@@ -96,14 +106,11 @@ function applyStyle(method, parameters){
 }
 
 function addListeners(){
-	console.log("Event Listeners Added");
 	chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse){
-		console.log("Message Received");
 		if(msg.text == "style"){
 			applyStyle(msg.parameters.method, msg.parameters);
 		}
 		if(msg.text == "updateBody"){
-			console.log("updateBody");
 			document.getElementsByTagName('body')[0].innerHTML = msg.content;
 		}
 	});

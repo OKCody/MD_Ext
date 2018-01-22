@@ -24,6 +24,12 @@ reader.onload = function(e){
   else{
     oldContent = e.srcElement.result;
     document.getElementsByTagName('body')[0].innerHTML = showdownCall(e.srcElement.result);
+    /*
+    chrome.tabs.executeScript(tabId, {
+      code:"MathJax.Hub.Queue(['Typeset',MathJax.Hub])"
+    });
+    */
+    updateMath();
   }
   //xhr = null; // Might be a way to mitigate a memory leak
   //reader = null; // Might be a way to mitigate a memory leak
@@ -83,5 +89,19 @@ function isAllowedURL(url){
   }
   else{
     return false;
+  }
+}
+
+function updateMath(){
+  if(document.getElementById('re-math')){
+    document.getElementById('re-math').remove();
+  }
+  if(document.getElementById('mathjaxReady')){
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.id = "re-math";
+    script.innerHTML = "MathJax.Hub.Queue(['Typeset',MathJax.Hub]);";
+    script.setAttribute('async','');
+    document.getElementsByTagName("head")[0].appendChild(script);
   }
 }

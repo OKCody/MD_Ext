@@ -1,4 +1,4 @@
-var tabId;
+var tabId = 0;
 var style = {
   method: "", // internal/external
   id: "user_css",
@@ -20,7 +20,7 @@ for (var i = 0 ; i < clicks.length; i++) {
 // /Event Listeners
 
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-  tabId = parseInt(tabs[0].id);
+  tabId = tabs[0].id;
 });
 
 buttonClick();
