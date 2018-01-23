@@ -113,5 +113,9 @@ function addListeners(){
 		if(msg.text == "updateBody"){
 			document.getElementsByTagName('body')[0].innerHTML = msg.content;
 		}
+		if(msg.text == "pdf"){
+			window.alert('Destination: "Save as PDF"');
+			window.print();
+		}
 	});
 }

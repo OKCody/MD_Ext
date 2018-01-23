@@ -23,6 +23,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
   tabId = tabs[0].id;
 });
 
+pagePersistence();
 buttonClick();
 
 function buttonClick(){
@@ -33,21 +34,18 @@ function buttonClick(){
 
   if(id == "output_btn"){
     console.log("output_btn");
-    document.getElementById("outputPage").style.display = "block";
-    document.getElementById("contentPage").style.display = "none";
-    document.getElementById("stylePage").style.display = "none";
+    showOutputPage();
   }
   if(id == "content_btn"){
     console.log("content_btn");
-    document.getElementById("outputPage").style.display = "none";
-    document.getElementById("contentPage").style.display = "block";
-    document.getElementById("stylePage").style.display = "none";
+    showContentPage();
   }
   if(id == "style_btn"){
     console.log("style_btn");
-    document.getElementById("outputPage").style.display = "none";
-    document.getElementById("contentPage").style.display = "none";
-    document.getElementById("stylePage").style.display = "block";
+    showStylePage();
+  }
+  if(id == "pdf"){
+    chrome.tabs.sendMessage(tabId, {text: "pdf"});
   }
   if(id == "sans-serif"){
     style.method = "external";
@@ -80,9 +78,27 @@ function buttonClick(){
     reader.readAsText(file);
   }
   console.log(typeof tabId);
-  chrome.tabs.sendMessage(parseInt(tabId), {text: "style", parameters: style});
+  chrome.tabs.sendMessage(tabId, {text: "style", parameters: style});
 }
 
 function showFilename(){
   document.getElementById('filename').innerHTML = document.getElementById('css_file').value.replace("C:\\fakepath\\", "");
+}
+
+function showOutputPage(){
+  document.getElementById("outputPage").style.display = "block";
+  document.getElementById("contentPage").style.display = "none";
+  document.getElementById("stylePage").style.display = "none";
+}
+
+function showContentPage(){
+  document.getElementById("outputPage").style.display = "none";
+  document.getElementById("contentPage").style.display = "block";
+  document.getElementById("stylePage").style.display = "none";
+}
+
+function showStylePage(){
+  document.getElementById("outputPage").style.display = "none";
+  document.getElementById("contentPage").style.display = "none";
+  document.getElementById("stylePage").style.display = "block";
 }
