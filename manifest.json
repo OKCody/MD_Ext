@@ -43,7 +43,8 @@
       "js": [
         "/src/content/content.js",
         "/js/Showdown/dist/showdown.js",
-        "/src/content/content2.js"
+        "/src/content/content2.js",
+        "/js/download/download.min.js"
       ]
     }
   ],

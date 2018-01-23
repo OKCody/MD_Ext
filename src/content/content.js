@@ -113,9 +113,22 @@ function addListeners(){
 		if(msg.text == "updateBody"){
 			document.getElementsByTagName('body')[0].innerHTML = msg.content;
 		}
-		if(msg.text == "pdf"){
-			window.alert('Destination: "Save as PDF"');
-			window.print();
+		if(msg.text == "download"){
+			if(msg.type == "pdf"){
+				window.alert('Destination: "Save as PDF"');
+				window.print();
+			}
+			if(msg.type == "html"){
+				var html = document;
+				if(html.getElementById('mathjax')){
+					html.getElementById('mathjax').remove();
+				}
+				if(html.getElementById('mathjaxReady')){
+					html.getElementById('mathjaxReady').remove();
+				}
+				html = html.getElementsByTagName('HTML')[0].innerHTML;
+				download(html, "markdownExt.html", "text/html");
+			}
 		}
 	});
 }
