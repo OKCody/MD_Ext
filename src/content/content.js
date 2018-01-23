@@ -5,7 +5,7 @@ chrome.extension.sendMessage({text: "active"}, function(response){
 		clearInterval(readyStateCheckInterval);
 		// The following triggers when page is done loading
 		// ----------------------------------------------------------
-
+		
 		mathjaxCall();
 		chrome.storage.local.get(['style'], function(result){
 			applyStyle(result.style.method, result.style);
