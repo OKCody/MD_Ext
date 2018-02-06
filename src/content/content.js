@@ -5,7 +5,7 @@ chrome.extension.sendMessage({text: "active"}, function(response){
 		clearInterval(readyStateCheckInterval);
 		// The following triggers when page is done loading
 		// ----------------------------------------------------------
-		
+
 		mathjaxCall();
 		chrome.storage.local.get(['style'], function(result){
 			applyStyle(result.style.method, result.style);
@@ -119,15 +119,20 @@ function addListeners(){
 				window.print();
 			}
 			if(msg.type == "html"){
-				var html = document;
-				if(html.getElementById('mathjax')){
-					html.getElementById('mathjax').remove();
-				}
-				if(html.getElementById('mathjaxReady')){
-					html.getElementById('mathjaxReady').remove();
-				}
-				html = html.getElementsByTagName('HTML')[0].innerHTML;
-				download(html, "markdownExt.html", "text/html");
+				console.log("hkhhgv");
+				var getMediaInterval = setInterval(function(){
+					if(document.getElementById('mathjaxReady')){
+						if(document.getElementById('mathjax')){
+							document.getElementById('mathjax').remove();
+						}
+						if(document.getElementById('mathjaxReady')){
+							document.getElementById('mathjaxReady').remove();
+						}
+						// All the things to do after MathJax is ready . . .
+						toHTML();
+						clearInterval(getMediaInterval);
+					}
+				}, 10);
 			}
 		}
 	});

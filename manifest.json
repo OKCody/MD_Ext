@@ -11,7 +11,7 @@
   "options_page": "src/options/index.html",
   "page_action": {
     "default_title": "MD_Ext",
-    "default_popup": "/src/browser_action/popup.html"
+    "default_popup": "/src/page_action/popup.html"
   },
   "permissions": [
     "file:///*.md",
@@ -19,7 +19,8 @@
     "tabs",
     "storage",
     "debugger",
-    "webNavigation"
+    "webNavigation",
+    "downloads"
   ],
   "background": {
     "scripts": [
@@ -41,10 +42,13 @@
         "file:///*.md"
       ],
       "js": [
+        "/js/node-mime/bundled-mime.js",
+        "src/content/toHTML.js",
         "/src/content/content.js",
         "/js/Showdown/dist/showdown.js",
-        "/src/content/content2.js",
-        "/js/download/download.min.js"
+        "/src/content/watch.js",
+        "/js/download/download.min.js",
+        "/js/jszip/dist/jszip.js"
       ]
     }
   ],

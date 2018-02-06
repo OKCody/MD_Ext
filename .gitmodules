@@ -10,3 +10,6 @@
 [submodule "js/download"]
 	path = js/download
 	url = https://github.com/rndme/download.git
+[submodule "js/jszip"]
+	path = js/jszip
+	url = https://github.com/stuk/jszip/
