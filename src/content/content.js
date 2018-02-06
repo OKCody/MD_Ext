@@ -119,7 +119,6 @@ function addListeners(){
 				window.print();
 			}
 			if(msg.type == "html"){
-				console.log("hkhhgv");
 				var getMediaInterval = setInterval(function(){
 					if(document.getElementById('mathjaxReady')){
 						if(document.getElementById('mathjax')){

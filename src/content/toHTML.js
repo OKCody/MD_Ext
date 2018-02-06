@@ -93,7 +93,11 @@ function getResources(toDownload, i, max, callback) {
 	}
 	request[i].onload = function(response){
 		if(request[i].readyState === 4){
-			if(request[i].status === 200){
+      // XHR on file:// from file:// status == 0 on success, source:
+      // https://stackoverflow.com/questions/5005960/xmlhttprequest-status-0-responsetext-is-empty#comment-43864898
+      var protocol = url[i].split('//')[0];
+			if(request[i].status === 200 ||
+        ( (protocol == "file:") && (request[i].status == 0) )){
 				// Could possibly be deleted. Use CLI file --mime-type to test if needed
 				if(folder[i] == "stylesheets/"){
 					blob = new Blob([request[i].response], {
@@ -112,26 +116,14 @@ function getResources(toDownload, i, max, callback) {
 				// Only paths to css files are assigned to hrefs,
 				// all others; images, audio, and videos are assigned to srcs.
 				if(folder[i] == "stylesheets/"){
-					toDownload.href = path;
+          toDownload.href = path;
 				}
 				else{
 					toDownload.src = path;
 				}
 			}
 			else{
-				console.error(request[i].statusText);
-			}
-		}
-		// In the event that any resource on the page is unable to be downloaded
-		// all the paths would be shuffled. In order to ensure correct path
-		// assignments, original urls will be assigned in the event one can't be
-		// reached for any reason.
-		if(request[i].readyState != 4 || request[i].status != 200){
-			if(folder[i] == "stylesheets/"){
-				toDownload.href = url[i];
-			}
-			else{
-				toDownload.src = url[i];
+				console.error(request[i].status, request[i].readyState, request[i]);
 			}
 		}
 	};
@@ -142,6 +134,21 @@ function getResources(toDownload, i, max, callback) {
 		downloaded = downloaded + 1;
 		zip.file(path, blob);
 	};
+
+  // In the event that any resource on the page is unable to be downloaded
+  // all the paths would be shuffled. In order to ensure correct path
+  // assignments, original urls will be assigned in the event one can't be
+  // reached for any reason.
+  request[i].onerror = function(){
+		if(request[i].readyState != 4 || request[i].status != 200){
+			if(folder[i] == "stylesheets/"){
+				toDownload.href = url[i];
+			}
+			else{
+				toDownload.src = url[i];
+			}
+		}
+  };
 
 	// After setting up XHR, finally send the request
 	request[i].send();

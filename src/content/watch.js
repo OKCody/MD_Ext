@@ -5,8 +5,9 @@ var pollingInterval;
 xhr = new XMLHttpRequest();
 reader = new FileReader();
 
-getFile(document.URL);
-pollingInterval = setInterval(function(){getFile(document.URL)}, 250);
+// Run immediately, then once every interval thereafter.
+getFile(document);
+pollingInterval = setInterval(function(){getFile(document)}, 250);
 
 xhr.onload = function(){
   // Occasionally a read is attempted while a read is in progress. -not under
@@ -50,14 +51,14 @@ xhr.onerror = function(){
   errorCount = errorCount + 1;
 }
 
-function getFile(url){
-  if(isAllowedURL(url)){
-    getContent(url);
+function getFile(document){
+  if(isAllowedURL(document)){
+    getContent(document);
   }
 }
 
-function getContent(path){
-  xhr.open("GET", path);
+function getContent(page){
+  xhr.open("GET", page.URL);
   xhr.responseType = "blob";
   xhr.send();
 }
@@ -77,12 +78,12 @@ function showdownCall(newContent){
 	return html;
 }
 
-function isAllowedURL(url){
+function isAllowedURL(page){
   // Create arrays of criteria which to check against
-  var protocols = ['file:']; // should be first 5 characters. http:, https, file:,
+  var protocols = ['file:'];
   var extensions = ['md']; // should not include period
-  var protocol = url.slice(0, 5);
-  var extension = url.split('.').pop();
+  var protocol = page.location.protocol;
+  var extension = page.URL.split('.').pop();
   // Check against criteria
   if(protocols.includes(protocol) && extensions.includes(extension)){
     return true;
