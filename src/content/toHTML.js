@@ -35,7 +35,7 @@ function toHTML(){
 	// arguments are necessary. [i] gets at specific url and i allows getResources
 	// to spawn unique XHRs for each url
 	for(i = 0; i < toDownload.length; i++){
-		getResources(toDownload[i], i, toDownload.length);
+		getHTMLResources(toDownload[i], i, toDownload.length);
 	}
 
 	// Check to see if all files have finished downloading. downloaded variable
@@ -57,7 +57,7 @@ function toHTML(){
 	},50);
 }
 
-function getResources(toDownload, i, max, callback) {
+function getHTMLResources(toDownload, i, max, callback) {
 	// Initialize number of files downloaded
 	downloaded = 0;
 

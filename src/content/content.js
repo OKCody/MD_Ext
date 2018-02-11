@@ -113,12 +113,14 @@ function addListeners(){
 		if(msg.text == "updateBody"){
 			document.getElementsByTagName('body')[0].innerHTML = msg.content;
 		}
+		// Download handlers
 		if(msg.text == "download"){
 			if(msg.type == "pdf"){
 				window.alert('Destination: "Save as PDF"');
 				window.print();
 			}
 			if(msg.type == "html"){
+				console.log("Download HTML");
 				var getMediaInterval = setInterval(function(){
 					if(document.getElementById('mathjaxReady')){
 						if(document.getElementById('mathjax')){
@@ -133,6 +135,42 @@ function addListeners(){
 					}
 				}, 10);
 			}
+			if(msg.type == "docx"){
+				console.log("Download DOCX");
+				toDocx();
+				//readyCheck(toDocx);
+			}
 		}
 	});
 }
+
+
+// Experimenting with function to check readiness
+/*
+function readyCheck(then){
+	console.log("here");
+	if(document.getElementById('mathjaxReady')){
+		if(document.getElementById('mathjax')){
+			document.getElementById('mathjax').remove();
+		}
+		if(document.getElementById('mathjaxReady')){
+			document.getElementById('mathjaxReady').remove();
+		}
+		// All the things to do after MathJax is ready . . .
+		then();
+	}
+	else{
+		var getMediaInterval = setInterval(function(){
+			if(document.getElementById('mathjax')){
+				document.getElementById('mathjax').remove();
+			}
+			if(document.getElementById('mathjaxReady')){
+				document.getElementById('mathjaxReady').remove();
+			}
+			// All the things to do after MathJax is ready . . .
+			then();
+			clearInterval(getMediaInterval);
+		});
+	}
+}
+*/

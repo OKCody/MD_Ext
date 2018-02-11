@@ -57,6 +57,11 @@ function buttonClick(){
     type = "html";
     //chrome.tabs.sendMessage(tabId, {text: "pdf"});
   }
+  if(id == "docx"){
+    msg = "download";
+    type = "docx";
+    //chrome.tabs.sendMessage(tabId, {text: "pdf"});
+  }
   // style handlers . . .
   if(id == "sans-serif"){
     style.method = "external";
