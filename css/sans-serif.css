@@ -18,6 +18,7 @@ pre{
   background-color: #EEEEEE !important;
   padding: 1em;
   page-break-inside: avoid;
+  overflow: hidden;
 }
 img{
   display: block;
