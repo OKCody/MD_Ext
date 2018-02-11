@@ -158,6 +158,10 @@ function downloadZip(){
 	// Download assembled zip archive as a blob
 	zip.generateAsync({type:"blob"})
 	.then(function (blob) {
-		download(blob, "site.zip", "application/zip");
+
+		// Using Chrome's download API seems to have fixed the "not commonly
+		// downloaded" warning.  Download.js should not be necessary.
+		var url = URL.createObjectURL(blob);
+		chrome.extension.sendMessage({text: "download", url: url, filename: "document.zip"});
 	});
 }

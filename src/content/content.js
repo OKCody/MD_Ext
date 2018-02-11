@@ -120,25 +120,10 @@ function addListeners(){
 				window.print();
 			}
 			if(msg.type == "html"){
-				console.log("Download HTML");
-				var getMediaInterval = setInterval(function(){
-					if(document.getElementById('mathjaxReady')){
-						if(document.getElementById('mathjax')){
-							document.getElementById('mathjax').remove();
-						}
-						if(document.getElementById('mathjaxReady')){
-							document.getElementById('mathjaxReady').remove();
-						}
-						// All the things to do after MathJax is ready . . .
-						toHTML();
-						clearInterval(getMediaInterval);
-					}
-				}, 10);
+				readySet(toHTML);
 			}
 			if(msg.type == "docx"){
-				console.log("Download DOCX");
-				toDocx();
-				//readyCheck(toDocx);
+				readySet(toDOCX);  // Calls toDocx when MathJax is ready
 			}
 		}
 	});
@@ -146,8 +131,8 @@ function addListeners(){
 
 
 // Experimenting with function to check readiness
-/*
-function readyCheck(then){
+
+function readySet(go){
 	console.log("here");
 	if(document.getElementById('mathjaxReady')){
 		if(document.getElementById('mathjax')){
@@ -157,10 +142,11 @@ function readyCheck(then){
 			document.getElementById('mathjaxReady').remove();
 		}
 		// All the things to do after MathJax is ready . . .
-		then();
+		go();
 	}
 	else{
 		var getMediaInterval = setInterval(function(){
+			console.log("try");
 			if(document.getElementById('mathjax')){
 				document.getElementById('mathjax').remove();
 			}
@@ -168,9 +154,12 @@ function readyCheck(then){
 				document.getElementById('mathjaxReady').remove();
 			}
 			// All the things to do after MathJax is ready . . .
-			then();
+			go();
 			clearInterval(getMediaInterval);
 		});
 	}
 }
-*/
+
+function test(){
+	console.log("text");
+}

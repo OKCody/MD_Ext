@@ -2,6 +2,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender){
   if (msg.text == "active"){
     tabId = sender.tab.id;
     chrome.pageAction.show(tabId);
-    //chrome.browserAction.setIcon({path: '/icons/icon48.png', tabId: tabId});
+  }
+  if (msg.text == "download"){
+    chrome.downloads.download({url: msg.url, filename: msg.filename});
   }
 });

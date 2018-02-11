@@ -1,44 +1,36 @@
 toDownload = [];
 downloaded = 0;
-function toDocx(){
-  getMediaInterval = setInterval(function(){
-    if(document.getElementById('mathjaxReady')){
-      if(document.getElementById('mathjax')){
-        document.getElementById('mathjax').remove();
-      }
-      if(document.getElementById('mathjaxReady')){
-        document.getElementById('mathjaxReady').remove();
-      }
-      if(document.getElementById('MathJax_Message')){
-        document.getElementById('MathJax_Message').remove();
-      }
-      // All the things to do after MathJax is ready . . .
-      clone = document.getElementsByTagName('HTML')[0].cloneNode(true);
-      image = Object.values(clone.getElementsByTagName('img'));
-      //console.log(image);
-      for(i = 0; i < image.length; i++){
-    		if(image[i].src != "" && image[i].src != undefined){
-    			toDownload.push(image[i]);
-    		}
-    	}
-      for(i = 0; i < toDownload.length; i++){
-    		getDOCXResources(toDownload[i], i, toDownload.length);
-    	}
-      downloadReadyCheck = setInterval(function(){
-    		if(toDownload.length == downloaded){
-    			// Excluding index.html fixes the "not commonly downloaded and may be
-    			// dangerous warning"
-    			// Must be last, because hrefs and srcs are being modified within it
-    			// before this point.
+function toDOCX(){
+  console.log("fromDocx");
+  // All the things to do after MathJax is ready . . .
+  clone = document.getElementsByTagName('HTML')[0].cloneNode(true);
+  image = Object.values(clone.getElementsByTagName('img'));
+  //console.log(image);
+  for(i = 0; i < image.length; i++){
+		if(image[i].src != "" && image[i].src != undefined){
+			toDownload.push(image[i]);
+		}
+	}
+  for(i = 0; i < toDownload.length; i++){
+		getDOCXResources(toDownload[i], i, toDownload.length);
+	}
+  downloadReadyCheck = setInterval(function(){
+		if(toDownload.length == downloaded){
+			// Excluding index.html fixes the "not commonly downloaded and may be
+			// dangerous warning"
+			// Must be last, because hrefs and srcs are being modified within it
+			// before this point.
 
-          var blob = htmlDocx.asBlob(clone.outerHTML);
-          download(blob, "test.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-          clearInterval(getMediaInterval);
-          clearInterval(downloadReadyCheck);
-    		}
-    	},50);
-    }
-  },50);
+      var blob = htmlDocx.asBlob(clone.outerHTML);
+      
+      // Using Chrome's download API seems to have fixed the "not commonly
+  		// downloaded" warning.  Download.js should not be necessary.
+      var url = URL.createObjectURL(blob);
+      chrome.extension.sendMessage({text: "download", url: url, filename: "document.docx"});
+
+      clearInterval(downloadReadyCheck);
+		}
+	},50);
 }
 
 
