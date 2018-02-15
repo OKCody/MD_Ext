@@ -130,10 +130,10 @@ function addListeners(){
 }
 
 
-// Experimenting with function to check readiness
 
+// Check whether or not MathJax is finished. Proceeds accordingly.
 function readySet(go){
-	console.log("here");
+	// No need to wait if MathJax is already done
 	if(document.getElementById('mathjaxReady')){
 		if(document.getElementById('mathjax')){
 			document.getElementById('mathjax').remove();
@@ -145,6 +145,7 @@ function readySet(go){
 		go();
 	}
 	else{
+		// Wait for MathJax to finish doing its thing
 		var getMediaInterval = setInterval(function(){
 			console.log("try");
 			if(document.getElementById('mathjax')){
@@ -158,8 +159,4 @@ function readySet(go){
 			clearInterval(getMediaInterval);
 		});
 	}
-}
-
-function test(){
-	console.log("text");
 }

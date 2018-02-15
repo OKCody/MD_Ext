@@ -1,6 +1,10 @@
-toDownload = [];
-downloaded = 0;
+
 function toDOCX(){
+  request = [];
+  toDownload = [];
+  url = [];
+  downloaded = 0;
+
   console.log("fromDocx");
   // All the things to do after MathJax is ready . . .
   clone = document.getElementsByTagName('HTML')[0].cloneNode(true);
@@ -21,8 +25,9 @@ function toDOCX(){
 			// Must be last, because hrefs and srcs are being modified within it
 			// before this point.
 
+      //console.log(clone.outerHTML);
       var blob = htmlDocx.asBlob(clone.outerHTML);
-      
+
       // Using Chrome's download API seems to have fixed the "not commonly
   		// downloaded" warning.  Download.js should not be necessary.
       var url = URL.createObjectURL(blob);
@@ -35,24 +40,23 @@ function toDOCX(){
 
 
 function getDOCXResources(toDownload, i, max, callback) {
-  downloaded = 0;
 
-  url = toDownload.src;
+  url[i] = toDownload.src;
 
   // Spawn XHR for each resource
-	request = new XMLHttpRequest();
-	request.open("GET", url, true);
-  request.responseType = 'blob';
-  request.onload = function(response){
-		if(request.readyState === 4){
+	request[i] = new XMLHttpRequest();
+	request[i].open("GET", url[i], true);
+  request[i].responseType = 'blob';
+  request[i].onload = function(response){
+		if(request[i].readyState === 4){
       // XHR on file:// from file:// status == 0 on success, source:
       // https://stackoverflow.com/questions/5005960/xmlhttprequest-status-0-responsetext-is-empty#comment-43864898
-      var protocol = url.split('//')[0];
-			if(request.status === 200 ||
-        ( (protocol == "file:") && (request.status == 0) )){
+      var protocol = url[i].split('//')[0];
+			if(request[i].status === 200 ||
+        ( (protocol == "file:") && (request[i].status == 0) )){
 				// Could possibly be deleted. Use CLI file --mime-type to test if needed
 
-				blob = request.response;
+				blob = request[i].response;
 
         var fileReader = new FileReader();
         fileReader.onload = function() {
@@ -62,19 +66,20 @@ function getDOCXResources(toDownload, i, max, callback) {
           downscale(this.result, 450, 0, {quality: 1}).
             then(function(dataURL) {
               toDownload.src = dataURL;
+              //console.log(dataURL.length);
+              // Incrementing here instead of in onloadend because
+              // it could happen that downscale() will not have finished
+              // before onloadend is fired
+              downloaded = downloaded + 1;
             })
         };
         fileReader.readAsDataURL(blob);
 			}
 			else{
-				console.error(request.status, request.readyState, request);
+        toDownload.src = url[i];
+				console.error(request[i].status, request[i].readyState, request[i]);
 			}
 		}
 	};
-	// When resource is completely loaded, increment downloaded variable, add
-	// blob to zip object
-	request.onloadend = function(){
-		downloaded = downloaded + 1;
-	};
-  request.send();
+  request[i].send();
 }
