@@ -46,11 +46,9 @@
         "src/content/toHTML.js",
         "/src/content/content.js",
         "/js/html-docx-js/dist/html-docx.js",
-        "/js/downscale.js",
         "/src/content/toDOCX.js",
         "/js/Showdown/dist/showdown.js",
         "/src/content/watch.js",
-        "/js/download/download.min.js",
         "/js/jszip/dist/jszip.js"
       ]
     }
