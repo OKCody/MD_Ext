@@ -3,45 +3,36 @@ function toDOCX(){
   request = [];
   toDownload = [];
   url = [];
-  downloaded = 0;
+  downloaded = [];
+  i = 0;
 
   console.log("fromDocx");
   // All the things to do after MathJax is ready . . .
   clone = document.getElementsByTagName('HTML')[0].cloneNode(true);
   image = Object.values(clone.getElementsByTagName('img'));
   //console.log(image);
-  for(i = 0; i < image.length; i++){
-		if(image[i].src != "" && image[i].src != undefined){
-			toDownload.push(image[i]);
-		}
-	}
-  for(i = 0; i < toDownload.length; i++){
-		getDOCXResources(toDownload[i], i, toDownload.length);
-	}
-  downloadReadyCheck = setInterval(function(){
-		if(toDownload.length == downloaded){
-			// Excluding index.html fixes the "not commonly downloaded and may be
-			// dangerous warning"
-			// Must be last, because hrefs and srcs are being modified within it
-			// before this point.
-
-      //console.log(clone.outerHTML);
-      var blob = htmlDocx.asBlob(clone.outerHTML);
-
-      // Using Chrome's download API seems to have fixed the "not commonly
-  		// downloaded" warning.  Download.js should not be necessary.
-      var url = URL.createObjectURL(blob);
-      chrome.extension.sendMessage({text: "download", url: url, filename: "document.docx"});
-
-      clearInterval(downloadReadyCheck);
-		}
-	},50);
+  if(image.length == 0){
+    console.log("none");
+    downloader();
+  }
+  else{
+    for(i = 0; i < image.length; i++){
+  		if(image[i].src != "" && image[i].src != undefined){
+  			toDownload.push(image[i]);
+  		}
+  	}
+    for(i = 0; i < toDownload.length; i++){
+      console.log("toDownload", i);
+  		getDOCXResources(toDownload[i], i, toDownload.length);
+  	}
+  }
 }
 
 
 function getDOCXResources(toDownload, i, max, callback) {
 
   url[i] = toDownload.src;
+  blob = [];
 
   // Spawn XHR for each resource
 	request[i] = new XMLHttpRequest();
@@ -58,21 +49,11 @@ function getDOCXResources(toDownload, i, max, callback) {
 
 				blob = request[i].response;
 
-        var fileReader = new FileReader();
-        fileReader.onload = function() {
-          //toDownload.src = this.result;
-          //console.log(this.result);
+        fileReader = new FileReader();
 
-          downscale(this.result, 450, 0, {quality: 1}).
-            then(function(dataURL) {
-              toDownload.src = dataURL;
-              //console.log(dataURL.length);
-              // Incrementing here instead of in onloadend because
-              // it could happen that downscale() will not have finished
-              // before onloadend is fired
-              downloaded = downloaded + 1;
-            })
-        };
+        fileReader.onload = dlPrep(this.result, downloader);
+
+        //console.log("readAsDataURL", i);
         fileReader.readAsDataURL(blob);
 			}
 			else{
@@ -81,5 +62,35 @@ function getDOCXResources(toDownload, i, max, callback) {
 			}
 		}
 	};
+  console.log("send", i);
   request[i].send();
+}
+
+function dlPrep(insert, callback){
+  toDownload.src = insert;
+  downloaded.push(i);
+  console.log("downloaded", downloaded);
+  callback();
+}
+
+function downloader(){
+  //console.log("downloader", toDownload.length, downloaded);
+  if((toDownload.length == downloaded.length)){
+    console.log("downloader done");
+    // Excluding index.html fixes the "not commonly downloaded and may be
+    // dangerous warning"
+    // Must be last, because hrefs and srcs are being modified within it
+    // before this point.
+
+    //console.log(clone.outerHTML);
+    var docx = htmlDocx.asBlob(clone.outerHTML);
+
+    // Using Chrome's download API seems to have fixed the "not commonly
+    // downloaded" warning.  Download.js should not be necessary.
+    var url = URL.createObjectURL(docx);
+    chrome.extension.sendMessage({text: "download", url: url, filename: "document.docx"});
+  }
+  else{
+    console.log(downloaded.length, "/", toDownload.length);
+  }
 }
