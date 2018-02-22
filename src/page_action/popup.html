@@ -77,6 +77,25 @@
     .heading h2{
       margin: 0px;
     }
+    .toggle{
+      border: 1px solid #dddddd;
+      width: 100%;
+      height: 100%;
+      line-height: 50px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 16px;
+    }
+    .on{
+      background-color: #ffffff;
+      border-color: #dddddd;
+    }
+    .off{
+      background-color: #dddddd;
+      border-color: #bbbbbb;
+    }
     /*Hidden so as not to interfere with clean UI*/
     #css_file{
       width: 0.1px;
@@ -122,6 +141,15 @@
     </div>
   </div>
   <div id="contentPage">
+    <div class="row">
+      <div class="toggle on click" id="markdown">Markdown Conversion</div>
+    </div>
+    <div class="row">
+      <div class="toggle on click" id="mathjax">MathJax</div>
+    </div>
+    <div class="row">
+      <div class="toggle on click" id="watch">File Watch</div>
+    </div>
   </div>
   <div id="stylePage">
     <div class="row heading">

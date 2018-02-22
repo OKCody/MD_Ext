@@ -10,6 +10,9 @@ var style = {
 var msg = "";
 var type = "";
 
+// Retrieves current options from storage.local, displays their status
+getOptions();
+
 // Event Listeners
 
 document.getElementById("css_file").addEventListener("change", showFilename);
@@ -46,7 +49,7 @@ function buttonClick(){
     console.log("style_btn");
     showStylePage();
   }
-  // download handlers . . .
+  // output handlers . . .
   if(id == "pdf"){
     msg = "download";
     type = "pdf";
@@ -61,6 +64,22 @@ function buttonClick(){
     msg = "download";
     type = "docx";
     //chrome.tabs.sendMessage(tabId, {text: "pdf"});
+  }
+  // content toggle handlers . . .
+  if(this.classList.contains('toggle')){
+    if(this.classList.contains('on')){
+      this.classList.remove('on');
+      this.classList.add('off');
+      console.log("Turn", id, "off.");
+      chrome.tabs.sendMessage(tabId, {text: "options", option: id, value: false});
+    }
+    else{
+      this.classList.add('on');
+      this.classList.remove('off');
+      console.log("Turn", id, "on.");
+      // evaluates to something like options = {mathjax: true}
+      chrome.tabs.sendMessage(tabId, {text: "options", option: id, value: true});
+    }
   }
   // style handlers . . .
   if(id == "sans-serif"){
@@ -95,9 +114,10 @@ function buttonClick(){
     reader.addEventListener('loadend', (e) => {
       style.innerHTML = e.srcElement.result;
       console.log(style);
+      chrome.tabs.sendMessage(tabId, {text: "style", parameters: style});
     });
     reader.readAsText(file);
-    msg = "style";
+    msg = "save";
   }
   // sendMessage handler . . .
   if(msg == "style"){
@@ -105,6 +125,8 @@ function buttonClick(){
   }
   if(msg == "download"){
     chrome.tabs.sendMessage(tabId, {text: "download", type: type});
+    msg = null;
+    type = null;
   }
 }
 
@@ -128,4 +150,21 @@ function showStylePage(){
   document.getElementById("outputPage").style.display = "none";
   document.getElementById("contentPage").style.display = "none";
   document.getElementById("stylePage").style.display = "block";
+}
+
+
+function getOptions(){
+  chrome.storage.local.get(['options'], function(result){
+    for(key in result.options){
+      document.getElementById(key).classList.remove('on');
+      document.getElementById(key).classList.remove('off');
+      if(result.options[key]){
+        document.getElementById(key).classList.add('on');
+      }
+      else{
+        document.getElementById(key).classList.add('off');
+      }
+      console.log(key, result.options[key]);
+    }
+  });
 }

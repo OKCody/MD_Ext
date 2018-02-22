@@ -5,12 +5,13 @@ chrome.extension.sendMessage({text: "active"}, function(response){
 		clearInterval(readyStateCheckInterval);
 		// The following triggers when page is done loading
 		// ----------------------------------------------------------
-
+		options = {};
 		mathjaxCall();
 		chrome.storage.local.get(['style'], function(result){
 			applyStyle(result.style.method, result.style);
 		});
 		addListeners();
+		setDefaultOpts('initialize');
 		// ----------------------------------------------------------
 		}
 	}, 10);
@@ -47,30 +48,37 @@ function mathjaxCall(callback){
 */
 
 function mathjaxCall(){
-	var script = document.createElement("script");
-  script.type = "text/javascript";
-	script.id = "mathjax";
-  script.src = chrome.runtime.getURL("/js/MathJax/unpacked/MathJax.js");
-  var config = 'MathJax.Hub.Config({' +
-                 'extensions: ["tex2jax.js"],' +
-                 'jax: ["input/TeX","output/HTML-CSS"]' +
-               '});' +
-               'MathJax.Hub.Startup.onload();' +
-// MathJax.Hub.Register.StartupHook("End", function(){ . . . }) runs when
-// MathJax is loaded and ready. To signify this to other functions that depend
-// on this being true, the ID of the <script> tag where MathJax is loaded and
-// configured changes from mathjax () to mathjaxReady. For example, this is
-// checked after the body is updated by showdownCall. If id = "mathjasReady" is
-// found a script is written to <head> that updates all math on page.
-							 'MathJax.Hub.Register.StartupHook("End",function () {' +
-							 		//'console.log("mathjax ready");' +
-									'document.getElementById("mathjax").id = "mathjaxReady";' +
-							 '});';
+	chrome.storage.local.get(['options'], function(result){
+    if(result.options.mathjax != false){
+			var script = document.createElement("script");
+		  script.type = "text/javascript";
+			script.id = "mathjax";
+		  script.src = chrome.runtime.getURL("/js/MathJax/unpacked/MathJax.js");
+		  var config = 'MathJax.Hub.Config({' +
+		                 'extensions: ["tex2jax.js"],' +
+		                 'jax: ["input/TeX","output/HTML-CSS"]' +
+		               '});' +
+		               'MathJax.Hub.Startup.onload();' +
+		// MathJax.Hub.Register.StartupHook("End", function(){ . . . }) runs when
+		// MathJax is loaded and ready. To signify this to other functions that depend
+		// on this being true, the ID of the <script> tag where MathJax is loaded and
+		// configured changes from mathjax () to mathjaxReady. For example, this is
+		// checked after the body is updated by showdownCall. If id = "mathjasReady" is
+		// found a script is written to <head> that updates all math on page.
+									 'MathJax.Hub.Register.StartupHook("End",function () {' +
+									 		//'console.log("mathjax ready");' +
+											'document.getElementById("mathjax").id = "mathjaxReady";' +
+									 '});';
 
-  if (window.opera) {script.innerHTML = config}
-               else {script.text = config}
+		  if (window.opera) {script.innerHTML = config}
+		               else {script.text = config}
 
-  document.getElementsByTagName("head")[0].appendChild(script);
+		  document.getElementsByTagName("head")[0].appendChild(script);
+		}
+		else{
+			console.log('content_mathjax', result.options.mathjax);
+		}
+	});
 }
 
 function applyStyle(method, parameters){
@@ -87,6 +95,7 @@ function applyStyle(method, parameters){
 		chrome.storage.local.set({'style': parameters});
 	}
 	if(method == "internal"){
+		console.log(parameters);
 		if(document.getElementById('user_css')){
 			document.getElementById('user_css').remove();
 		}
@@ -126,13 +135,49 @@ function addListeners(){
 				readySet(toDOCX);  // Calls toDocx when MathJax is ready
 			}
 		}
+		// Option handlers
+		if(msg.text == "options"){
+			options[msg.option] = msg.value; // options object created on line 8
+			chrome.storage.local.set({'options': options});
+			console.log(msg.option, msg.value);
+			chrome.storage.local.get(['options'], function(result){
+				console.log(result);
+			});
+		}
 	});
+}
+
+function setDefaultOpts(method){
+	if(method == 'initialize'){
+		chrome.storage.local.get(['options'], function(result){
+			if(result.options == undefined){
+				var options = {
+					markdown: true,
+					mathjax: true,
+					watch: true
+				};
+				chrome.storage.local.set({'options': options});
+			}
+			else{
+				console.log(result);
+			}
+		});
+	}
+	else{
+		var options = {
+			markdown: true,
+			mathjax: true,
+			watch: true
+		};
+		chrome.storage.local.set({'options': options});
+	}
 }
 
 
 
 // Check whether or not MathJax is finished. Proceeds accordingly.
 function readySet(go){
+	console.log("done");
 	// No need to wait if MathJax is already done
 	if(document.getElementById('mathjaxReady')){
 		if(document.getElementById('mathjax')){
@@ -145,6 +190,7 @@ function readySet(go){
 		go();
 	}
 	else{
+		console.log("not done");
 		// Wait for MathJax to finish doing its thing
 		var getMediaInterval = setInterval(function(){
 			console.log("try");
@@ -157,6 +203,6 @@ function readySet(go){
 			// All the things to do after MathJax is ready . . .
 			go();
 			clearInterval(getMediaInterval);
-		});
+		},100);
 	}
 }
