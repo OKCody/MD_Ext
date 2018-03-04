@@ -1,6 +1,7 @@
 watch();
 
 function watch(){
+  document.getElementsByTagName('body')[0].setAttribute('style', null);
   var oldContent = "";
   var errorCount = 0;
   var pollingInterval;
@@ -41,6 +42,7 @@ function watch(){
       oldContent = e.srcElement.result;
       showdownCall(e.srcElement.result);
       updateMath();
+      //toSlides(resize);
     }
     //xhr = null; // Might be a way to mitigate a memory leak
     //reader = null; // Might be a way to mitigate a memory leak
@@ -85,15 +87,26 @@ function compare(content, oldContent){
 
 function showdownCall(newContent){
   chrome.storage.local.get(['options'], function(result){
+    console.log(result);
     if(result.options.markdown != false){
       var converter = new showdown.Converter();
-    	var html = converter.makeHtml(newContent);
-    	document.getElementsByTagName('body')[0].innerHTML = html;
+    	html = converter.makeHtml(newContent);
+      if(result.options.page == true){
+        document.getElementsByTagName('body')[0].innerHTML = html;
+      }
+      if(result.options.page == false){
+        slides(toSlides, resize, html);
+      }
     }
     else{
       console.log('markdown', result.options.markdown);
     }
   });
+}
+
+function slides(callback){
+  document.getElementsByTagName('body')[0].innerHTML = arguments[2];
+  callback(arguments[1]); // effectively calls toSlides(resize);
 }
 
 function isAllowedURL(page){

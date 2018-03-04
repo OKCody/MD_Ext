@@ -1,5 +1,7 @@
 // Call with, toSlides(resize);
 
+console.log("slides");
+
 function toSlides(callback){
   current = 0;
   number = 0;
@@ -26,6 +28,7 @@ function assembleDeck(callback){
   }
   slide.setAttribute('class', 'slide');
   slide.setAttribute('id', number++);
+  deck.setAttribute('style', "height: 100%; overflow: hidden;");
   deck.appendChild(slide);
   callback();
 }

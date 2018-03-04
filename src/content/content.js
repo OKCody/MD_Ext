@@ -143,6 +143,11 @@ function addListeners(){
 			chrome.storage.local.get(['options'], function(result){
 				console.log(result);
 			});
+			if(msg.option == "page"){
+				// call watch() to "refresh" the page when toggling between document
+				// and slide display types
+				watch();
+			}
 		}
 	});
 }
@@ -152,6 +157,7 @@ function setDefaultOpts(method){
 		chrome.storage.local.get(['options'], function(result){
 			if(result.options == undefined){
 				var options = {
+					page: true,
 					markdown: true,
 					mathjax: true,
 					watch: true
@@ -165,6 +171,7 @@ function setDefaultOpts(method){
 	}
 	else{
 		var options = {
+			page: true,
 			markdown: true,
 			mathjax: true,
 			watch: true
