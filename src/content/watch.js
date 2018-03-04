@@ -1,6 +1,7 @@
 watch();
 
 function watch(){
+  // undo scrollwheel-preventing CSS applied by toSlides()
   document.getElementsByTagName('body')[0].setAttribute('style', null);
   var oldContent = "";
   var errorCount = 0;
