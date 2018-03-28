@@ -2,8 +2,8 @@
   "name": "Sketch 3",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "This extension was created with the awesome extensionizr.com",
-  "homepage_url": "http://extensionizr.com",
+  "description": "This extension is a work in progress.",
+  "homepage_url": "https://github.com/OKCody/MD_Ext",
   "icons": {
     "48": "icons/icon48.png"
   },
