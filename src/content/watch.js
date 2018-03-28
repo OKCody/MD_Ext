@@ -3,6 +3,7 @@ watch();
 function watch(){
   // undo scrollwheel-preventing CSS applied by toSlides()
   document.getElementsByTagName('body')[0].setAttribute('style', null);
+  //document.ontouchmove = function(e){ return true; }
   var oldContent = "";
   var errorCount = 0;
   var pollingInterval;

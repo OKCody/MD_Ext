@@ -40,10 +40,10 @@ function createSlide(){
 }
 
 function resize(){
-  ratio = 16/9;
+  //ratio = screen.width / screen.height; // proper aspect no matter screen size
   width = window.innerWidth;
-  height = width / ratio;
-  var slides = document.getElementsByClassName('slide');
+  height = window.innerHeight;
+  var slides = document.getElementsByTagName('body');
   for(i=0; i < slides.length; i++){
 	  slides[i].setAttribute('style',
       'height:'+height+';' +
@@ -55,6 +55,7 @@ function resize(){
 
 function advance(event){
   event.preventDefault();
+
   if(event.code == "ArrowUp" || event.code == "ArrowLeft" || event.code == "Backspace"){
     current--;
     if(current < 0){
