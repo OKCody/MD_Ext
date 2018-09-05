@@ -92,6 +92,7 @@ function showdownCall(newContent){
     console.log(result);
     if(result.options.markdown != false){
       var converter = new showdown.Converter();
+      converter.setOption('tables', true);
     	html = converter.makeHtml(newContent);
       if(result.options.page == true){
         document.getElementsByTagName('body')[0].innerHTML = html;
