@@ -42,7 +42,7 @@
         "file:///*.md"
       ],
       "js": [
-        "js/node-mime/Mime.js",
+        "js/node-mime/bundled-mime.js",
         "src/content/toHTML.js",
         "/src/content/content.js",
         "/js/html-docx-js/dist/html-docx.js",
